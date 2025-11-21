@@ -39,6 +39,3 @@ yolov8*.pt
 
 # Images or videos you don't want to store
 *.mp4
-
-# Git LFS config (if using)
-.gitattributes
