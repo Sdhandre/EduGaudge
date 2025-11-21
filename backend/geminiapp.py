@@ -109,7 +109,7 @@ db_state = DatabaseState()
 
 # Load models
 print("Loading models...")
-clf = joblib.load("attention_model_6.pkl")
+clf = joblib.load("attention_model_7.pkl")
 
 # Get feature names directly from model if available
 if hasattr(clf, "feature_names_in_"):

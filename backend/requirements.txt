@@ -1,0 +1,26 @@
+# Core FastAPI & Server
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+python-multipart==0.0.20
+websockets==15.0.1
+
+# Database & Environment
+motor==3.7.1
+pymongo==4.15.1
+python-dotenv==1.1.1
+
+# AI & Computer Vision (Optimized for Cloud)
+opencv-python-headless==4.12.0.88
+mediapipe==0.10.14
+ultralytics==8.3.199
+
+# Machine Learning
+numpy==2.0.2
+joblib==1.5.2
+pandas==2.3.2
+scikit-learn==1.6.1
+
+# Google AI
+google-generativeai
+requests==2.32.5
+protobuf<5
