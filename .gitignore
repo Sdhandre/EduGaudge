@@ -37,5 +37,3 @@ Thumbs.db
 yolov8*.pt
 *.onnx
 
-# Images or videos you don't want to store
-*.mp4
