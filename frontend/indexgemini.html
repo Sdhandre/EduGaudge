@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduGauge - Classroom Attention Monitoring</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="stylessgemini.css">
+</head>
+<body class="flex transition-colors duration-300">
+
+        <div id="preloader" style="position:fixed;inset:0;background:#fff;z-index:99999;display:flex;align-items:center;justify-content:center;transition:opacity 0.5s ease">
+        <video id="preloader-video" autoplay muted playsinline style="max-width:300px">
+            <source src="EduGauge_Logo_Animation_Generation.mp4" type="video/mp4">
+        </video>
+    </div>
+        <script>
+        function removePreloader() {
+            const preloader = document.getElementById('preloader');
+            const video = document.getElementById('preloader-video');
+                
+            if (preloader) {
+                console.log('Hiding preloader...');
+                
+                // Fade out
+                preloader.style.opacity = '0';
+                
+                // Remove completely after fade
+                setTimeout(() => {
+                    preloader.style.display = 'none';
+                    preloader.remove();
+                    console.log('Preloader removed!');
+                }, 600);
+            }
+        }
+        
+        // Remove when video ends
+        const video = document.getElementById('preloader-video');
+        if (video) {
+            video.addEventListener('ended', removePreloader);
+            video.playbackRate = 2;
+            // Also remove if video fails to play
+            video.addEventListener('error', () => {
+                console.log('Video error, removing preloader');
+                removePreloader();
+            });
+        }
+        
+        // Force remove after 3 seconds (safety)
+        setTimeout(removePreloader, 7000);
+        
+        // Also remove on page load (additional safety)
+        window.addEventListener('load', () => {
+            setTimeout(removePreloader, 7000);
+        });
+    </script>
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar w-64 bg-white dark:bg-gray-800 shadow-lg h-screen sticky top-0 flex flex-col transition-colors duration-300 lg:flex hidden lg:w-64 md:w-48">
+        <!-- Header -->
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex items-center space-x-3">
+                <!-- UPDATED: Custom Logo -->
+                <div class="w-12 h-12   Call. The linear search. Play Mahaprabhu Sree. Hey, Cortana. Hey, Cortana. This call. Hey Cortana, play, play, Steven. Play some music. Hey, Cortana Suman. What's up? Cortana.  rounded-lg flex items-center justify-center overflow-hidden">
+                    <img src="logoedu.png" 
+                         alt="EduGauge Logo" 
+                         class="w-full h-full object-contain">
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-gray-800 dark:text-white">EduGauge</h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Attention Monitor</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- User Info -->
+        <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <img class="w-8 h-8 rounded-full" src="https://lh3.googleusercontent.com/a/default-user" alt="User">
+                    <div>
+                        <p class="text-sm font-medium text-gray-800 dark:text-white">Mr. Sujal Dhandre</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Teacher</p>
+                    </div>
+                </div>
+                <!-- Dark Mode Toggle -->
+                <button id="darkModeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <span class="material-icons text-gray-600 dark:text-gray-400">dark_mode</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Navigation Menu -->
+        <nav class="flex-1 py-4">
+            <ul class="space-y-2 px-4">
+                <li>
+                    <button class="nav-btn w-full flex items-center space-x-3 px-3 py-2 text-left text-indigo-600 bg-indigo-50 dark:bg-indigo-900/50 rounded-lg transition-colors" data-section="home">
+                        <span class="material-icons">home</span>
+                        <span class="font-medium">Home</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn w-full flex items-center space-x-3 px-3 py-2 text-left text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors" data-section="live-session">
+                        <span class="material-icons">videocam</span>
+                        <span class="font-medium">Live Session</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn w-full flex items-center space-x-3 px-3 py-2 text-left text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors" data-section="analytics">
+                        <span class="material-icons">analytics</span>
+                        <span class="font-medium">Analytics</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn w-full flex items-center space-x-3 px-3 py-2 text-left text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors" data-section="history">
+                        <span class="material-icons">history</span>
+                        <span class="font-medium">Session History</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn w-full flex items-center space-x-3 px-3 py-2 text-left text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors" data-section="settings">
+                        <span class="material-icons">settings</span>
+                        <span class="font-medium">Settings</span>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+        
+        <!-- Footer Actions -->
+        <div class="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
+            <button id="clearDataBtn" class="w-full flex items-center justify-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                <span class="material-icons text-sm">delete_sweep</span>
+                <span class="text-sm">Clear Data</span>
+            </button>
+            <button id="helpBtn" class="w-full flex items-center justify-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                <span class="material-icons">help</span>
+                <span class="text-sm">Help & Support</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Mobile Navigation -->
+    <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-50">
+        <div class="flex justify-around py-2">
+            <button class="mobile-nav-btn flex flex-col items-center p-2 text-indigo-600 dark:text-indigo-400" data-section="home">
+                <span class="material-icons text-sm">home</span>
+                <span class="text-xs mt-1">Home</span>
+            </button>
+            <button class="mobile-nav-btn flex flex-col items-center p-2 text-gray-500 dark:text-gray-400" data-section="live-session">
+                <span class="material-icons text-sm">videocam</span>
+                <span class="text-xs mt-1">Live</span>
+            </button>
+            <button class="mobile-nav-btn flex flex-col items-center p-2 text-gray-500 dark:text-gray-400" data-section="analytics">
+                <span class="material-icons text-sm">analytics</span>
+                <span class="text-xs mt-1">Analytics</span>
+            </button>
+            <button class="mobile-nav-btn flex flex-col items-center p-2 text-gray-500 dark:text-gray-400" data-section="history">
+                <span class="material-icons text-sm">history</span>
+                <span class="text-xs mt-1">History</span>
+            </button>
+            <button class="mobile-nav-btn flex flex-col items-center p-2 text-gray-500 dark:text-gray-400" data-section="settings">
+                <span class="material-icons text-sm">settings</span>
+                <span class="text-xs mt-1">Settings</span>
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 transition-colors duration-300 pb-20 lg:pb-0">
+        <!-- HOME SECTION -->
+        <section id="home" class="content-section p-4 lg:p-8">
+            <div class="max-w-6xl mx-auto space-y-6 lg:space-y-8">
+                <!-- Header -->
+                <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-4 lg:space-y-0">
+                    <div>
+                        <h1 class="text-2xl lg:text-3xl font-bold text-gray-800 dark:text-white">Welcome to EduGauge</h1>
+                        <p class="text-gray-600 dark:text-gray-400 mt-2">Monitor classroom attention and engagement in real-time</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button id="refreshStatsBtn" class="text-gray-600 dark:text-gray-400 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <span class="material-icons">refresh</span>
+                        </button>
+                        <button id="notificationBtn" class="text-gray-600 dark:text-gray-400 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 relative transition-colors">
+                            <span class="material-icons">notifications</span>
+                            <span id="notificationBadge" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-gray-800 hidden"></span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+                    <div class="bg-white dark:bg-gray-800 p-4 lg:p-6 rounded-2xl shadow-md transition-colors duration-300">
+                        <div class="flex items-center space-x-3">
+                            <div class="bg-blue-100 dark:bg-blue-900/50 p-2 lg:p-3 rounded-full">
+                                <span class="material-icons text-blue-600 dark:text-blue-400 text-lg lg:text-xl">schedule</span>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-lg lg:text-2xl font-bold text-gray-800 dark:text-white truncate" id="totalSessionTime">0h 0m</p>
+                                <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400">Total Session Time</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-4 lg:p-6 rounded-2xl shadow-md transition-colors duration-300">
+                        <div class="flex items-center space-x-3">
+                            <div class="bg-green-100 dark:bg-green-900/50 p-2 lg:p-3 rounded-full">
+                                <span class="material-icons text-green-600 dark:text-green-400 text-lg lg:text-xl">trending_up</span>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-lg lg:text-2xl font-bold text-gray-800 dark:text-white" id="avgEngagement">0%</p>
+                                <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400">Avg. Engagement</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-4 lg:p-6 rounded-2xl shadow-md transition-colors duration-300">
+                        <div class="flex items-center space-x-3">
+                            <div class="bg-purple-100 dark:bg-purple-900/50 p-2 lg:p-3 rounded-full">
+                                <span class="material-icons text-purple-600 dark:text-purple-400 text-lg lg:text-xl">class</span>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-lg lg:text-2xl font-bold text-gray-800 dark:text-white" id="totalClasses">0</p>
+                                <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400">Classes Monitored</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-4 lg:p-6 rounded-2xl shadow-md transition-colors duration-300">
+                        <div class="flex items-center space-x-3">
+                            <div class="bg-amber-100 dark:bg-amber-900/50 p-2 lg:p-3 rounded-full">
+                                <span class="material-icons text-amber-600 dark:text-amber-400 text-lg lg:text-xl">insights</span>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-lg lg:text-2xl font-bold text-gray-800 dark:text-white" id="totalInsights">0</p>
+                                <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400">Insights Generated</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Start New Session -->
+                <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6 lg:p-8 rounded-2xl shadow-lg">
+                    <div class="max-w-2xl mx-auto text-center">
+                        <h2 class="text-xl lg:text-2xl font-bold mb-3">Start New Class Session</h2>
+                        <p class="mb-6 text-indigo-100">Enter your class name and begin real-time attention monitoring</p>
+                        
+                        <!-- Class Name Input -->
+                        <div class="bg-white/10 p-4 lg:p-6 rounded-xl mb-6">
+                            <div class="max-w-md mx-auto">
+                                <label class="block text-sm font-medium text-indigo-100 mb-2">Class Name</label>
+                                <input type="text" id="className" placeholder="e.g., History - World War II" 
+                                       class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-indigo-200 focus:outline-none focus:ring-2 focus:ring-white/50">
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-center space-x-4">
+                            <button id="startBtn" class="flex items-center justify-center gap-2 px-6 lg:px-8 py-3 lg:py-4 bg-white text-indigo-600 font-bold rounded-full shadow-lg hover:bg-indigo-50 transition-all transform hover:scale-105">
+                                <span class="material-icons">play_circle_filled</span>
+                                Start Monitoring
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Sessions -->
+                <div class="bg-white dark:bg-gray-800 p-4 lg:p-6 rounded-2xl shadow-md transition-colors duration-300">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-white">Recent Sessions</h3>
+                        <button id="viewAllSessionsBtn" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium transition-colors">View All</button>
+                    </div>
+                    <div class="space-y-4" id="recentSessions">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LIVE SESSION SECTION -->
+        <section id="live-session" class="content-section section-hidden p-4 lg:p-8">
+            <div class="max-w-6xl mx-auto space-y-6 lg:space-y-8">
+                <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-4 lg:space-y-0">
+                    <div>
+                        <h1 class="text-2xl lg:text-3xl font-bold text-gray-800 dark:text-white">Live Session</h1>
+                        <p class="text-gray-600 dark:text-gray-400 mt-2" id="currentClassInfo">No active session</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="bg-green-100 dark:bg-green-900/50 px-4 py-2 rounded-full">
+                            <span class="text-green-800 dark:text-green-400 font-medium flex items-center gap-2">
+                                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                <span id="sessionTimer">00:00</span>
+                            </span>
+                        </div>
+                        <button id="endSessionBtn" class="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors" disabled>
+                            <span class="material-icons text-sm">stop</span>
+                            End Session
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+                    <!-- Video Feed -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-white dark:bg-gray-800 p-4 lg:p-6 rounded-2xl shadow-md transition-colors duration-300">
+                            <div class="video-container mx-auto mb-4">
+                                <video id="previewVideo" autoplay playsinline muted class="w-full rounded-lg shadow-md bg-black"></video>
+                                <canvas id="overlayCanvas" class="w-full rounded-lg"></canvas>
+                            </div>
+                            <canvas id="captureCanvas" width="640" height="480" class="hidden"></canvas>
+                            
+                            <!-- Live Controls -->
+                            <div class="flex flex-wrap justify-center gap-2 lg:gap-4 mt-6">
+                                <button id="pauseBtn" class="flex items-center gap-2 px-3 lg:px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors" disabled>
+                                    <span class="material-icons text-sm">pause</span>
+                                    <span class="hidden sm:inline">Pause</span>
+                                </button>
+                                <button id="screenshotBtn" class="flex items-center gap-2 px-3 lg:px-4 py-2 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-lg hover:bg-indigo-200 dark:hover:bg-indigo-900 transition-colors" disabled>
+                                    <span class="material-icons text-sm">screenshot</span>
+                                    <span class="hidden sm:inline">Snapshot</span>
+                                </button>
+                                <button id="recordBtn" class="flex items-center gap-2 px-3 lg:px-4 py-2 bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 rounded-lg hover:bg-purple-200 dark:hover:bg-purple-900 transition-colors" disabled>
+                                    <span class="material-icons text-sm">fiber_manual_record</span>
+                                    <span class="hidden sm:inline">Record</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Live Stats Panel -->
+                    <div class="space-y-6">
+                        <!-- Overall Score -->
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md text-center transition-colors duration-300">
+                            <div class="mb-4">
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Overall Attention</p>
+                                <p id="overallScore" class="text-4xl font-bold text-green-500">--</p>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                <div id="attentionBar" class="bg-green-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Live Metrics -->
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md transition-colors duration-300">
+                            <h4 class="font-semibold text-gray-800 dark:text-white mb-4">Live Metrics</h4>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600 dark:text-gray-400">Students Detected</span>
+                                    <span id="liveStudentCount" class="font-bold text-indigo-600 dark:text-indigo-400">0</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600 dark:text-gray-400">Attentive</span>
+                                    <span id="liveAttentive" class="font-bold text-green-600 dark:text-green-400">0</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600 dark:text-gray-400">Distracted</span>
+                                    <span id="liveDistracted" class="font-bold text-red-600 dark:text-red-400">0</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600 dark:text-gray-400">Using Phone</span>
+                                    <span id="livePhoneUsers" class="font-bold text-yellow-600 dark:text-yellow-400">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Activity Feed -->
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md transition-colors duration-300">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="font-semibold text-gray-800 dark:text-white">Activity Feed</h4>
+                                <button id="clearActivityBtn" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+                                    <span class="material-icons text-sm">clear</span>
+                                </button>
+                            </div>
+                            <div id="activityFeed" class="space-y-2 max-h-64 overflow-y-auto">
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Session will start soon...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STREAMLINED ANALYTICS SECTION -->
+        <section id="analytics" class="content-section section-hidden p-4 lg:p-8">
+            <div class="max-w-6xl mx-auto space-y-6 lg:space-y-8">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                    <div>
+                        <h1 class="text-2xl lg:text-3xl font-bold text-gray-800 dark:text-white">Session Analytics</h1>
+                        <p class="text-gray-600 dark:text-gray-400 mt-2" id="analyticsClassInfo">Analysis of your recent session</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2 lg:gap-3">
+                        <button id="shareReportBtn" class="flex items-center gap-2 px-3 lg:px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            <span class="material-icons text-sm">share</span>
+                            <span class="hidden sm:inline">Share Report</span>
+                        </button>
+                        <button id="exportReportBtn" class="flex items-center gap-2 px-3 lg:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                            <span class="material-icons text-sm">download</span>
+                            <span class="hidden sm:inline">Export Data</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Session Summary Cards -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+                    <div class="bg-white dark:bg-gray-800 p-4 lg:p-6 rounded-2xl shadow-md text-center transition-colors duration-300">
+                        <div class="bg-indigo-100 dark:bg-indigo-900/50 w-10 h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <span class="material-icons text-indigo-600 dark:text-indigo-400">schedule</span>
+                        </div>
+                        <p class="text-lg lg:text-2xl font-bold text-gray-800 dark:text-white" id="analyticsDuration">--</p>
+                        <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400">Session Duration</p>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-4 lg:p-6 rounded-2xl shadow-md text-center transition-colors duration-300">
+                        <div class="bg-green-100 dark:bg-green-900/50 w-10 h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <span class="material-icons text-green-600 dark:text-green-400">trending_up</span>
+                        </div>
+                        <p class="text-lg lg:text-2xl font-bold text-gray-800 dark:text-white" id="analyticsAvgScore">--</p>
+                        <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400">Average Attention</p>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-4 lg:p-6 rounded-2xl shadow-md text-center transition-colors duration-300">
+                        <div class="bg-blue-100 dark:bg-blue-900/50 w-10 h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <span class="material-icons text-blue-600 dark:text-blue-400">groups</span>
+                        </div>
+                        <p class="text-lg lg:text-2xl font-bold text-gray-800 dark:text-white" id="analyticsMaxStudents">--</p>
+                        <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400">Peak Class Size</p>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-4 lg:p-6 rounded-2xl shadow-md text-center transition-colors duration-300">
+                        <div class="bg-amber-100 dark:bg-amber-900/50 w-10 h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <span class="material-icons text-amber-600 dark:text-amber-400">psychology</span>
+                        </div>
+                        <p class="text-lg lg:text-2xl font-bold text-gray-800 dark:text-white" id="analyticsEngagement">--</p>
+                        <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400">Engagement Level</p>
+                    </div>
+                </div>
+                
+                <!-- Attention Timeline Chart -->
+                <div class="bg-white dark:bg-gray-800 p-4 lg:p-6 rounded-2xl shadow-md transition-colors duration-300">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 space-y-4 sm:space-y-0">
+                        <h3 class="text-lg lg:text-xl font-semibold text-gray-800 dark:text-white">Attention Timeline</h3>
+                        <div class="flex space-x-2">
+                            <button class="timeline-filter px-3 py-1 text-sm bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-full" data-filter="all">Overall</button>
+                            <button class="timeline-filter px-3 py-1 text-sm text-gray-500 dark:text-gray-400 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700" data-filter="detailed">Detailed</button>
+                        </div>
+                    </div>
+                    <div class="h-64 lg:h-96">
+                        <canvas id="attentionChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- ENHANCED AI ANALYSIS SECTION -->
+                <div class="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 p-6 lg:p-8 rounded-2xl shadow-lg border border-purple-200 dark:border-purple-700 transition-colors duration-300">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 space-y-4 lg:space-y-0">
+                        <div class="flex items-center space-x-3">
+                            <div class="bg-purple-100 dark:bg-purple-900/50 p-3 rounded-full">
+                                <span class="material-icons text-purple-600 dark:text-purple-400">psychology</span>
+                            </div>
+                            <div>
+                                <h3 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-white">AI-Powered Session Analysis</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Get intelligent insights about your classroom session</p>
+                            </div>
+                        </div>
+                        <button id="generateAiAnalysis" class="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white px-6 py-3 rounded-xl flex items-center gap-2 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                            <span class="material-icons">auto_awesome</span>
+                            <span>Generate AI Insights</span>
+                        </button>
+                    </div>
+                    
+                    <div id="aiAnalysisContainer" class="hidden">
+                        <div id="aiAnalysisLoading" class="text-center py-12 hidden">
+                            <div class="animate-spin h-12 w-12 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+                            <p class="text-gray-600 dark:text-gray-400 text-lg">AI is analyzing your classroom session...</p>
+                            <p class="text-gray-500 dark:text-gray-500 text-sm mt-2">This may take a few seconds</p>
+                        </div>
+                        
+                        <div id="aiAnalysisContent" class="prose dark:prose-invert max-w-none">
+                            <!-- AI analysis will appear here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Placeholder content when no analysis is generated -->
+                    <div id="aiAnalysisPlaceholder" class="text-center py-12">
+                        <div class="bg-white/50 dark:bg-gray-800/50 p-8 rounded-xl border-2 border-dashed border-purple-300 dark:border-purple-700">
+                            <span class="material-icons text-6xl text-purple-400 dark:text-purple-500 mb-4 block">smart_toy</span>
+                            <h4 class="text-lg font-semibold text-gray-800 dark:text-white mb-2">AI Analysis Ready</h4>
+                            <p class="text-gray-600 dark:text-gray-400 mb-4">Click "Generate AI Insights" to get intelligent recommendations about your session performance, engagement patterns, and teaching strategies.</p>
+                            <div class="flex flex-wrap justify-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                                <span class="flex items-center gap-1">
+                                    <span class="material-icons text-sm">insights</span>
+                                    Performance Analysis
+                                </span>
+                                <span class="flex items-center gap-1">
+                                    <span class="material-icons text-sm">lightbulb</span>
+                                    Teaching Suggestions
+                                </span>
+                                <span class="flex items-center gap-1">
+                                    <span class="material-icons text-sm">trending_up</span>
+                                    Engagement Patterns
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONDENSED QUICK INSIGHTS (Optional) -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md transition-colors duration-300">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                            <span class="material-icons text-blue-600 dark:text-blue-400">insights</span>
+                            Quick Insights
+                        </h3>
+                        <div id="keyInsights" class="space-y-3">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md transition-colors duration-300">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                            <span class="material-icons text-purple-600 dark:text-purple-400">pattern</span>
+                            Attention Patterns
+                        </h3>
+                        <div id="attentionPatterns" class="space-y-3">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md transition-colors duration-300">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                            <span class="material-icons text-indigo-600 dark:text-indigo-400">lightbulb</span>
+                            Quick Tips
+                        </h3>
+                        <div id="recommendations" class="space-y-3">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SESSION HISTORY SECTION -->
+        <section id="history" class="content-section section-hidden p-4 lg:p-8">
+            <div class="max-w-6xl mx-auto space-y-6 lg:space-y-8">
+                <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-4 lg:space-y-0">
+                    <div>
+                        <h1 class="text-2xl lg:text-3xl font-bold text-gray-800 dark:text-white">Session History</h1>
+                        <p class="text-gray-600 dark:text-gray-400 mt-2">View and analyze your past sessions</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button id="filterSessionsBtn" class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            <span class="material-icons text-sm">filter_list</span>
+                            <span class="hidden sm:inline ml-2">Filter</span>
+                        </button>
+                        <button id="exportAllBtn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">Export All</button>
+                    </div>
+                </div>
+                
+                <!-- Session Filter -->
+                <div id="sessionFilter" class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md transition-colors duration-300 hidden">
+                    <div class="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                        <select id="filterPeriod" class="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg">
+                            <option value="all">All Time</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="year">This Year</option>
+                        </select>
+                        <button id="applyFilterBtn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Apply</button>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden transition-colors duration-300">
+                    <div class="p-4 lg:p-6 border-b border-gray-200 dark:border-gray-700">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">All Sessions</h3>
+                    </div>
+                    <div id="sessionHistoryContainer">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SETTINGS SECTION -->
+        <section id="settings" class="content-section section-hidden p-4 lg:p-8">
+            <div class="max-w-4xl mx-auto space-y-6 lg:space-y-8">
+                <div>
+                    <h1 class="text-2xl lg:text-3xl font-bold text-gray-800 dark:text-white">Settings</h1>
+                    <p class="text-gray-600 dark:text-gray-400 mt-2">Configure your monitoring preferences</p>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                    <!-- General Settings -->
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md transition-colors duration-300">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">General Settings</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Auto-Save Sessions</label>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="autoSaveSetting" class="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 bg-white dark:bg-gray-700" checked>
+                                    <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Automatically save session data</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notification Preferences</label>
+                                <div class="space-y-2">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="lowAttentionAlerts" class="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 bg-white dark:bg-gray-700" checked>
+                                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Low attention alerts</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="sessionReports" class="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 bg-white dark:bg-gray-700">
+                                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Session completion reports</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Data Retention</label>
+                                <select id="dataRetention" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    <option value="30">30 Days</option>
+                                    <option value="90">90 Days</option>
+                                    <option value="365" selected>1 Year</option>
+                                    <option value="forever">Forever</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Monitoring Settings -->
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md transition-colors duration-300">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Monitoring Settings</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Detection Sensitivity</label>
+                                <input type="range" id="sensitivityRange" class="w-full" min="1" max="10" value="7">
+                                <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    <span>Low</span>
+                                    <span>High</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Update Frequency</label>
+                                <select id="updateFrequency" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    <option value="500" selected>Every 0.5 seconds</option>
+                                    <option value="1000">Every 1 second</option>
+                                    <option value="2000">Every 2 seconds</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Privacy Mode</label>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="privacyMode" class="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 bg-white dark:bg-gray-700" checked>
+                                    <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Hide individual tracking (aggregate data only)</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Camera Quality</label>
+                                <select id="cameraQuality" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    <option value="low">Low (480p)</option>
+                                    <option value="medium" selected>Medium (720p)</option>
+                                    <option value="high">High (1080p)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Save Settings Button -->
+                <div class="flex flex-col sm:flex-row sm:justify-end space-y-4 sm:space-y-0 sm:space-x-4">
+                    <button id="resetSettingsBtn" class="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Reset to Default</button>
+                    <button id="saveSettingsBtn" class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">Save Settings</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="appgemini.js"></script>
+</body>
+</html>

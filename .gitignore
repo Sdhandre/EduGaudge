@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+
+# Virtual environments
+venv/
+.env
+mvenv/
+.MicrosoftVisualStudioTemporaryGeneratedFile/
+.Python/
+
+# Node / frontend
+node_modules/
+dist/
+build/
+
+# IDEs
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Large ML/Model files - track separately or exclude
+*.pkl
+*.pt
+yolov8*.pt
+*.onnx
+
+# Images or videos you don't want to store
+*.mp4
+
+# Git LFS config (if using)
+.gitattributes
