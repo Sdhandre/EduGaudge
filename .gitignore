@@ -32,7 +32,6 @@ Thumbs.db
 *.log
 
 # Large ML/Model files - track separately or exclude
-*.pkl
 *.pt
 yolov8*.pt
 *.onnx
