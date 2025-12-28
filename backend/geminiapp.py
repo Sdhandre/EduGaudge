@@ -300,7 +300,9 @@ def analyze_frame(frame):
                 
                 # Smart drowsiness detection with multiple conditions
                 is_drowsy = (avg_ear < 0.23) or (mouth_ratio > 0.7) or (head_tilt > 0.5)
-                
+
+
+
             except:
                 # Method 2: Fallback to original model
                 try:
