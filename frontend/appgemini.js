@@ -236,9 +236,9 @@
 
     // Load saved sessions
     const savedSessions = Storage.load(CONFIG.STORAGE_KEY, []);
-    console.log(`ðŸ“š Loaded ${savedSessions.length} saved sessions`);
+    console.log(` Loaded ${savedSessions.length} saved sessions`);
 
-    console.log('âœ… EduGauge initialized successfully');
+    console.log(' EduGauge initialized successfully');
   }
 
   // Theme Management
